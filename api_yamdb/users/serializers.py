@@ -3,6 +3,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from .utils import generate_confirmation_code, send_confirmation_email
+
 User = get_user_model()
 
 
@@ -13,7 +15,12 @@ class UserSignupSerializer(serializers.ModelSerializer):
         fields = ('email', 'username')
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
+        confirmation_code = generate_confirmation_code()
+        user = User.objects.create(
+            **validated_data,
+            confirmation_code=confirmation_code
+        )
+        send_confirmation_email(validated_data['email'], confirmation_code)
         return user
 
 

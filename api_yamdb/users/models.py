@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 
 CHOICES = (
@@ -24,3 +25,24 @@ class CustomUser(AbstractUser):
         null=True,
         verbose_name='Код подтверждения'
     )
+
+    def clean(self):
+        super().clean()
+        if self.username == 'me':
+            raise ValidationError(
+                {'username': 'Использование имени "me" в качестве username '
+                 'запрещено.'}
+            )
+        if CustomUser.objects.exclude(
+            id=self.id
+        ).filter(username=self.username).exists():
+            raise ValidationError(
+                {'username': 'Этот username уже используется.'}
+            )
+        if self.email:
+            if CustomUser.objects.exclude(
+                id=self.id
+            ).filter(email=self.email).exists():
+                raise ValidationError(
+                    {'email': 'Этот email уже используется.'}
+                )

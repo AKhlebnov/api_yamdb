@@ -1,11 +1,18 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 User = get_user_model()
 
 
 class ReviewCommentBase(models.Model):
     """Базовая модель для отзывов и комменатриев."""
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name = '%(class)s',
+        verbose_name='Автор'
+    )
     text = models.TextField(
         verbose_name='Текст'
     )
@@ -16,6 +23,7 @@ class ReviewCommentBase(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('pub_date',)
 
     def __str__(self):
         return self.text
@@ -23,14 +31,11 @@ class ReviewCommentBase(models.Model):
 
 class Review(ReviewCommentBase):
     """Описание модели 'Отзыв'."""
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reviews',
-        verbose_name='Автор'
-    )
     score = models.PositiveSmallIntegerField(
-        max_length=2,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        ],
         verbose_name='Оценка'
     )
     title=models.ForeignKey(
@@ -53,12 +58,6 @@ class Review(ReviewCommentBase):
 
 class Comment(ReviewCommentBase):
     """Описание модели 'Комментарий'."""
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='comments',
-        verbose_name='Автор'
-    )
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,

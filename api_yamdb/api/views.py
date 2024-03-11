@@ -1,4 +1,5 @@
 from rest_framework import filters, generics, permissions, viewsets
+from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from django.shortcuts import get_object_or_404
 
@@ -10,6 +11,7 @@ from .serializers import (
 )
 
 
+@action(methods=['get', 'post', 'delete', 'patch'])
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (
@@ -29,6 +31,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, title=title)
 
 
+@action(methods=['get', 'post', 'delete', 'patch'])
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = (

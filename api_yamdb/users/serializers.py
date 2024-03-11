@@ -67,3 +67,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role'
         )
+
+
+class UserMePatchSerializer(serializers.ModelSerializer):
+    """Сериализатор для метода PATCH."""
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
+        )
+        read_only_fields = ('role',)

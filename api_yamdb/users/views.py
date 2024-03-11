@@ -9,7 +9,8 @@ from rest_framework.exceptions import MethodNotAllowed
 from .serializers import (
     UserSignupSerializer,
     CustomTokenObtainPairSerializer,
-    UserSerializer
+    UserSerializer,
+    UserMePatchSerializer
 )
 
 User = get_user_model()
@@ -80,9 +81,24 @@ class UserAccountViewSet(
 ):
     """Класс представления своей учётной записи."""
     queryset = User.objects.all()
-    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, ]
+
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH':
+            return UserMePatchSerializer
+        return UserSerializer
 
     def get_object(self):
         user = self.request.user
         return user
+
+    def update(self, request, *args, **kwargs):
+        raise MethodNotAllowed('PUT', detail='Метод \"PUT\" не разрешён')
+
+    # def partial_update(self, request, *args, **kwargs):
+    #     return super().update(request, *args, **kwargs, partial=True)
+
+    def partial_update(self, request, *args, **kwargs):
+        if 'role' in request.data:
+            raise MethodNotAllowed('PATCH', detail='Невозможно изменить поле "role"')
+        return super().update(request, *args, **kwargs, partial=True)

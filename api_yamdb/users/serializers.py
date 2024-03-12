@@ -4,31 +4,19 @@ from rest_framework.exceptions import NotFound
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .utils import generate_confirmation_code, send_confirmation_email
+from .mixins import UsernameAndEmailValidatorMixin
 
 User = get_user_model()
 
 
-class UserSignupSerializer(serializers.ModelSerializer):
+class UserSignupSerializer(
+    UsernameAndEmailValidatorMixin,
+    serializers.ModelSerializer
+):
     """Сериализатор регистрации."""
     class Meta:
         model = User
         fields = ('email', 'username')
-
-    def validate_username(self, value):
-        if value == 'me':
-            raise serializers.ValidationError(
-                "Использование имени 'me' запрещено."
-            )
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError(
-                "Этот username уже используется."
-            )
-        return value
-
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Этот email уже используется.")
-        return value
 
     def create(self, validated_data):
         confirmation_code = generate_confirmation_code()
@@ -60,7 +48,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return attrs
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(
+    UsernameAndEmailValidatorMixin,
+    serializers.ModelSerializer
+):
     """Сериализатор для работы с пользователями."""
     class Meta:
         model = User
@@ -69,7 +60,10 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
-class UserMePatchSerializer(serializers.ModelSerializer):
+class UserMePatchSerializer(
+    UsernameAndEmailValidatorMixin,
+    serializers.ModelSerializer
+):
     """Сериализатор для метода PATCH."""
     class Meta:
         model = User

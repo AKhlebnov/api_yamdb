@@ -9,14 +9,14 @@ from .views import (
     UserAccountViewSet
 )
 
-router = DefaultRouter()
-router.register(
+router_v1 = DefaultRouter()
+router_v1.register(
     r'v1/auth/signup', UserSignupViewSet, basename='user-signup'
 )
-router.register(
+router_v1.register(
     r'v1/users', UserListCreateAPIView, basename='user-list-create'
 )
-router.register(
+router_v1.register(
     r'v1/users', UserRetrieveUpdateDestroyAPIView, basename='user-detail'
 )
 
@@ -32,5 +32,5 @@ urlpatterns = [
             {'get': 'retrieve', 'patch': 'partial_update'}
         ),
         name='user-me-detail'),
-    path('', include(router.urls)),
+    path('', include(router_v1.urls)),
 ]

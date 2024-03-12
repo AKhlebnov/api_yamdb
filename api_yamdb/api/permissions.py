@@ -11,6 +11,28 @@ class IsAdmin(permissions.BasePermission):
         return request.user.is_authenticated and request.user.role == 'admin'
 
 
+class IsSuperuser(permissions.BasePermission):
+    """
+    Разрешает доступ только суперпользователю, остальным чтение.
+    """
+    message = 'Доступно только админу.'
+
+    def has_permission(self, request, view):
+        return (request.user.is_authenticated
+                and request.user.role == 'superuser')
+
+
+class IsModerator(permissions.BasePermission):
+    """
+    Разрешает доступ только суперпользователю, остальным чтение.
+    """
+    message = 'Доступно только админу.'
+
+    def has_permission(self, request, view):
+        return (request.user.is_authenticated
+                and request.user.role == 'moderator')
+
+
 class IsAdminOrReadOnly(permissions.BasePermission):
     """
     Разрешает доступ только админу, остальным чтение.

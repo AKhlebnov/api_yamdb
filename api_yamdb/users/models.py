@@ -27,7 +27,7 @@ class CustomUser(AbstractUser):
     )
 
     def clean(self):
-        super().clean()
+        # super().clean()
         if self.username == 'me':
             raise ValidationError(
                 {'username': 'Использование имени "me" в качестве username '

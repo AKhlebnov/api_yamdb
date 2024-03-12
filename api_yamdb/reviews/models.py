@@ -12,7 +12,7 @@ class ReviewCommentBase(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name = '%(class)s',
+        related_name='%(class)s',
         verbose_name='Автор'
     )
     text = models.TextField(
@@ -40,8 +40,8 @@ class Review(ReviewCommentBase):
         ],
         verbose_name='Оценка'
     )
-    title=models.ForeignKey(
-        Title,
+    title = models.ForeignKey(
+        'Title',
         on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Произведение'

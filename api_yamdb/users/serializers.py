@@ -3,17 +3,28 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from .utils import generate_confirmation_code, send_confirmation_email
+from .mixins import UsernameAndEmailValidatorMixin
+
 User = get_user_model()
 
 
-class UserSignupSerializer(serializers.ModelSerializer):
+class UserSignupSerializer(
+    UsernameAndEmailValidatorMixin,
+    serializers.ModelSerializer
+):
     """Сериализатор регистрации."""
     class Meta:
         model = User
         fields = ('email', 'username')
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
+        confirmation_code = generate_confirmation_code()
+        user = User.objects.create(
+            **validated_data,
+            confirmation_code=confirmation_code
+        )
+        send_confirmation_email(validated_data['email'], confirmation_code)
         return user
 
 
@@ -37,10 +48,26 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return attrs
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(
+    UsernameAndEmailValidatorMixin,
+    serializers.ModelSerializer
+):
     """Сериализатор для работы с пользователями."""
     class Meta:
         model = User
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role'
         )
+
+
+class UserMePatchSerializer(
+    UsernameAndEmailValidatorMixin,
+    serializers.ModelSerializer
+):
+    """Сериализатор для метода PATCH."""
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
+        )
+        read_only_fields = ('role',)

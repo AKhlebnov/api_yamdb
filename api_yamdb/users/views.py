@@ -9,8 +9,10 @@ from rest_framework.exceptions import MethodNotAllowed
 from .serializers import (
     UserSignupSerializer,
     CustomTokenObtainPairSerializer,
-    UserSerializer
+    UserSerializer,
+    UserMePatchSerializer
 )
+from api.permissions import IsAdmin
 
 User = get_user_model()
 
@@ -48,7 +50,7 @@ class UserListCreateAPIView(
     """Класс представления создания пользователя и списка пользователей."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdmin,]
     filter_backends = (filters.SearchFilter, )
     search_fields = ('username', )
 
@@ -64,13 +66,8 @@ class UserRetrieveUpdateDestroyAPIView(
     serializer_class = UserSerializer
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
-    permission_classes = [IsAuthenticated, IsAdminUser]
-
-    def update(self, request, *args, **kwargs):
-        raise MethodNotAllowed('PUT', detail='Метод \"PUT\" не разрешён')
-
-    def partial_update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs, partial=True)
+    permission_classes = [IsAdmin, ]
+    http_method_names = ['get', 'patch', 'delete', ]
 
 
 class UserAccountViewSet(
@@ -80,9 +77,22 @@ class UserAccountViewSet(
 ):
     """Класс представления своей учётной записи."""
     queryset = User.objects.all()
-    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, ]
+    http_method_names = ['get', 'patch', ]
+
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH':
+            return UserMePatchSerializer
+        return UserSerializer
 
     def get_object(self):
         user = self.request.user
         return user
+
+    def partial_update(self, request, *args, **kwargs):
+        if 'role' in request.data:
+            raise MethodNotAllowed(
+                'PATCH',
+                detail='Невозможно изменить поле "role"'
+            )
+        return super().update(request, *args, **kwargs, partial=True)

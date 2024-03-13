@@ -7,7 +7,11 @@ from rest_framework import filters, permissions, viewsets
 from reviews.models import Title, Review, Category, Genre, Title
 from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
-from .permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
+from .permissions import(
+    IsAdminOrReadOnly,
+    IsAuthorOrReadOnly,
+    IsModeratorOrReadOnly
+)
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
@@ -22,11 +26,19 @@ User = get_user_model()
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (
-        IsAuthorOrReadOnly,
-        permissions.IsAuthenticatedOrReadOnly
-    )
     http_method_names = ['get', 'post', 'patch', 'delete', ]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [permissions.IsAuthenticated()]
+        elif self.action in ('partial_update', 'destroy'):
+            return [
+                permissions.IsAuthenticated(),
+                IsAdminOrReadOnly() 
+                or IsAuthorOrReadOnly() 
+                or IsModeratorOrReadOnly()
+            ]
+        return [permissions.IsAuthenticatedOrReadOnly()]
 
     def get_title(self):
         return get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -42,11 +54,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (
-        IsAuthorOrReadOnly,
-        permissions.IsAuthenticatedOrReadOnly
-    )
     http_method_names = ['get', 'post', 'patch', 'delete', ]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [permissions.IsAuthenticated()]
+        elif self.action in ('partial_update', 'destroy'):
+            return [
+                permissions.IsAuthenticated(),
+                IsAdminOrReadOnly()
+                or IsAuthorOrReadOnly()
+                or IsModeratorOrReadOnly()
+            ]
+        return [permissions.IsAuthenticatedOrReadOnly()]
 
     def get_review(self):
         return get_object_or_404(Review, id=self.kwargs.get('review_id'))

@@ -14,10 +14,12 @@ class UsernameAndEmailValidatorMixin:
             raise serializers.ValidationError(
                 "Использование имени 'me' запрещено."
             )
-        if not email:
-            raise serializers.ValidationError(
-                "Поле 'email' обязательно для заполнения."
-            )
+        request = self.context.get('request')
+        if request.method == 'POST':
+            if not email:
+                raise serializers.ValidationError(
+                    "Поле 'email' обязательно для заполнения."
+                )
         existing_user_by_username = User.objects.filter(
             username=username
         ).exists()

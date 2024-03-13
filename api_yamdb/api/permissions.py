@@ -3,7 +3,7 @@ from rest_framework import permissions
 
 class IsAdmin(permissions.BasePermission):
     """
-    Разрешает доступ только админу, остальным чтение.
+    Разрешает доступ только админу.
     """
     message = 'Доступно только админу.'
 
@@ -13,20 +13,20 @@ class IsAdmin(permissions.BasePermission):
 
 class IsSuperuser(permissions.BasePermission):
     """
-    Разрешает доступ только суперпользователю, остальным чтение.
+    Разрешает доступ только суперпользователю.
     """
-    message = 'Доступно только админу.'
+    message = 'Доступно только суперюзеру.'
 
     def has_permission(self, request, view):
         return (request.user.is_authenticated
-                and request.user.role == 'superuser')
+                and request.user.is_superuser)
 
 
 class IsModerator(permissions.BasePermission):
     """
-    Разрешает доступ только суперпользователю, остальным чтение.
+    Разрешает доступ только модерутору.
     """
-    message = 'Доступно только админу.'
+    message = 'Доступно только модератору.'
 
     def has_permission(self, request, view):
         return (request.user.is_authenticated
@@ -78,4 +78,4 @@ class IsSuperuserOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
                 or (request.user.is_authenticated
-                    and request.user.role == 'superuser'))
+                    and request.user.is_superuser))

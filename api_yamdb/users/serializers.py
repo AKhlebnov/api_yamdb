@@ -1,7 +1,7 @@
 from django.core.validators import RegexValidator, MaxLengthValidator
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 

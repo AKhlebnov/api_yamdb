@@ -6,7 +6,6 @@ CHOICES = (
     ('user', 'Пользователь'),
     ('moderator', 'Модератор'),
     ('admin', 'Администратор'),
-    ('superuser', 'Суперюзер Django')
 )
 
 
@@ -27,7 +26,7 @@ class CustomUser(AbstractUser):
     )
 
     def clean(self):
-        # super().clean()
+        super().clean()
         if self.username == 'me':
             raise ValidationError(
                 {'username': 'Использование имени "me" в качестве username '
@@ -46,3 +45,6 @@ class CustomUser(AbstractUser):
                 raise ValidationError(
                     {'email': 'Этот email уже используется.'}
                 )
+    
+    class Meta:
+        ordering = ('id',)

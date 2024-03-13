@@ -1,4 +1,3 @@
-from datetime import timedelta
 from pathlib import Path
 
 
@@ -22,11 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.apps.UsersConfig',
-    'reviews.apps.ReviewsConfig',
-    'api.apps.ApiConfig',
-    'rest_framework',
-    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -91,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -107,27 +101,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
-
-AUTH_USER_MODEL = 'users.CustomUser'
-
-SIMPLE_JWT = {
-    "TOKEN_OBTAIN_SERIALIZER": "api.serializers.CustomTokenObtainPairSerializer",
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-}
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
-}
-
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-
-EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
-
-EMAIL_HOST_USER = 'admin@api_yamdb.ru'

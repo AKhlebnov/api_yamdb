@@ -6,10 +6,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
 from reviews.models import Comment, Review, Category, Genre, Title
-from users.models import User
+from users.models import CustomUser
 
 DATA = {
-    User: 'users.csv',
+    CustomUser: 'users.csv',
     Category: 'category.csv',
     Genre: 'genre.csv',
     Title: 'titles.csv',

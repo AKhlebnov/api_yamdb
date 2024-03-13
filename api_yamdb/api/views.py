@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, viewsets
-from rest_framework.decorators import action
 
 from reviews.models import Title, Review, Category, Genre, Title
 from .filters import TitleFilter
@@ -28,7 +27,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly
     )
     http_method_names = ['get', 'post', 'patch', 'delete', ]
-    
 
     def get_title(self):
         return get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -85,6 +83,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_serializer_class(self):
         if self.request.method in ['POST', 'PATCH']:

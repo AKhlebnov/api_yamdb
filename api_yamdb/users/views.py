@@ -12,7 +12,7 @@ from .serializers import (
     UserSerializer,
     UserMePatchSerializer
 )
-from api.permissions import IsAdmin
+from api.permissions import IsAdmin, IsSuperuser
 
 User = get_user_model()
 
@@ -21,7 +21,14 @@ class UserSignupViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """Класс представления создания пользователя."""
     queryset = User.objects.all()
     serializer_class = UserSignupSerializer
-    permission_classes = [AllowAny]
+    permission_classes = (AllowAny,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -50,7 +57,7 @@ class UserListCreateAPIView(
     """Класс представления создания пользователя и списка пользователей."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdmin,]
+    permission_classes = (IsAdmin | IsSuperuser, )
     filter_backends = (filters.SearchFilter, )
     search_fields = ('username', )
 
@@ -66,8 +73,8 @@ class UserRetrieveUpdateDestroyAPIView(
     serializer_class = UserSerializer
     lookup_field = 'username'
     lookup_url_kwarg = 'username'
-    permission_classes = [IsAdmin, ]
-    http_method_names = ['get', 'patch', 'delete', ]
+    permission_classes = (IsAdmin | IsSuperuser, )
+    http_method_names = ('get', 'patch', 'delete', )
 
 
 class UserAccountViewSet(
@@ -77,8 +84,8 @@ class UserAccountViewSet(
 ):
     """Класс представления своей учётной записи."""
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated, ]
-    http_method_names = ['get', 'patch', ]
+    permission_classes = (IsAuthenticated, )
+    http_method_names = ('get', 'patch', )
 
     def get_serializer_class(self):
         if self.request.method == 'PATCH':

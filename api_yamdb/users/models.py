@@ -6,7 +6,6 @@ CHOICES = (
     ('user', 'Пользователь'),
     ('moderator', 'Модератор'),
     ('admin', 'Администратор'),
-    ('superuser', 'Суперюзер Django')
 )
 
 
@@ -46,3 +45,6 @@ class CustomUser(AbstractUser):
                 raise ValidationError(
                     {'email': 'Этот email уже используется.'}
                 )
+    
+    class Meta:
+        ordering = ('id',)

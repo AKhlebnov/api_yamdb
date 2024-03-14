@@ -42,7 +42,7 @@ class IsAuthorOrModeratorOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:
             return (
-                request.user == obj.user
+                request.user == obj.author
                 or request.user.role == 'moderator'
                 or request.user.role == 'admin'
             )

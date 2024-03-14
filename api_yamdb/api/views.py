@@ -7,7 +7,7 @@ from rest_framework import filters, permissions, viewsets
 from reviews.models import Title, Review, Category, Genre, Title
 from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
-from .permissions import(
+from .permissions import (
     IsAdminOrReadOnly,
     IsAuthorOrModeratorOrAdmin
 )
@@ -55,7 +55,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             return [permissions.IsAuthenticated()]
         elif self.action in ('partial_update', 'destroy'):
             return [IsAuthorOrModeratorOrAdmin()]
-        return [permissions.AllowAny()]
+        return [permissions.IsAuthenticatedOrReadOnly()]
 
     def get_review(self):
         return get_object_or_404(Review, id=self.kwargs.get('review_id'))

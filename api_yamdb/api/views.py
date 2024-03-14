@@ -31,7 +31,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             return [permissions.IsAuthenticated()]
         elif self.action in ('partial_update', 'destroy'):
             return [IsAuthorOrModeratorOrAdmin()]
-        return [permissions.AllowAny()]
+        return [permissions.IsAuthenticatedOrReadOnly()]
 
     def get_title(self):
         return get_object_or_404(Title, id=self.kwargs.get('title_id'))

@@ -9,12 +9,7 @@ from rest_framework.exceptions import ValidationError
 from reviews.models import Title, Review, Category, Genre, Title
 from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
-
-from .permissions import (
-    IsAdminOrReadOnly,
-    IsAuthorOrModeratorOrAdmin
-)
-
+from .permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrAdmin
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,

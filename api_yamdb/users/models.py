@@ -45,6 +45,6 @@ class CustomUser(AbstractUser):
                 raise ValidationError(
                     {'email': 'Этот email уже используется.'}
                 )
-    
+
     class Meta:
         ordering = ('id',)

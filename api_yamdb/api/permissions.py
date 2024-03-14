@@ -22,17 +22,6 @@ class IsSuperuser(permissions.BasePermission):
                 and request.user.is_superuser)
 
 
-class IsModerator(permissions.BasePermission):
-    """
-    Разрешает доступ только модерутору.
-    """
-    message = 'Доступно только модератору.'
-
-    def has_permission(self, request, view):
-        return (request.user.is_authenticated
-                and request.user.role == 'moderator')
-
-
 class IsAdminOrReadOnly(permissions.BasePermission):
     """
     Разрешает доступ только админу, остальным чтение.
@@ -45,37 +34,16 @@ class IsAdminOrReadOnly(permissions.BasePermission):
                     and request.user.role == 'admin'))
 
 
-class IsAuthorOrReadOnly(permissions.BasePermission):
+class IsAuthorOrModeratorOrAdmin(permissions.BasePermission):
     """
-    Разрешает доступ только автору объекта, остальным чтение.
+    Разрешает доступ только автору объекта, модератору или администратору.
     """
-    message = 'Изменить контент может только автор.'
 
     def has_object_permission(self, request, view, obj):
-        return (request.method in permissions.SAFE_METHODS
-                or (request.user.is_authenticated
-                    and obj.user == request.user))
-
-
-class IsModeratorOrReadOnly(permissions.BasePermission):
-    """
-    Разрешает доступ только модераторам, остальным чтение.
-    """
-    message = 'Изменить контент может только модератор.'
-
-    def has_permission(self, request, view):
-        return (request.method in permissions.SAFE_METHODS
-                or (request.user.is_authenticated
-                    and request.user.role == 'moderator'))
-
-
-class IsSuperuserOrReadOnly(permissions.BasePermission):
-    """
-    Разрешает доступ только суперпользователю Django, остальным чтение.
-    """
-    message = 'Изменить контент может только суперпользователь.'
-
-    def has_permission(self, request, view):
-        return (request.method in permissions.SAFE_METHODS
-                or (request.user.is_authenticated
-                    and request.user.is_superuser))
+        if request.user.is_authenticated:
+            return (
+                request.user == obj.user
+                or request.user.role == 'moderator'
+                or request.user.role == 'admin'
+            )
+        return False

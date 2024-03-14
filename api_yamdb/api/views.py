@@ -9,8 +9,7 @@ from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
 from .permissions import(
     IsAdminOrReadOnly,
-    IsAuthorOrReadOnly,
-    IsModeratorOrReadOnly
+    IsAuthorOrModeratorOrAdmin
 )
 from .serializers import (
     CommentSerializer,
@@ -32,13 +31,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [permissions.IsAuthenticated()]
         elif self.action in ('partial_update', 'destroy'):
-            return [
-                permissions.IsAuthenticated(),
-                IsAdminOrReadOnly() 
-                or IsAuthorOrReadOnly() 
-                or IsModeratorOrReadOnly()
-            ]
-        return [permissions.IsAuthenticatedOrReadOnly()]
+            return [IsAuthorOrModeratorOrAdmin()]
+        return [permissions.AllowAny()]
 
     def get_title(self):
         return get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -60,13 +54,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [permissions.IsAuthenticated()]
         elif self.action in ('partial_update', 'destroy'):
-            return [
-                permissions.IsAuthenticated(),
-                IsAdminOrReadOnly()
-                or IsAuthorOrReadOnly()
-                or IsModeratorOrReadOnly()
-            ]
-        return [permissions.IsAuthenticatedOrReadOnly()]
+            return [IsAuthorOrModeratorOrAdmin()]
+        return [permissions.AllowAny()]
 
     def get_review(self):
         return get_object_or_404(Review, id=self.kwargs.get('review_id'))

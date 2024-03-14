@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from reviews.models import Comment, Review, Category, Genre, Title
 
@@ -9,22 +8,17 @@ User = get_user_model()
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field='username'
+        read_only=True,
+        slug_field='username'
     )
     title = serializers.PrimaryKeyRelatedField(
         read_only=True
     )
 
     class Meta:
-        fields = ('id', 'author', 'text', 'pub_date', 'score')
+        fields = '__all__'
         model = Review
         read_only_fields = ('title',)
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=('author', 'title')
-            )
-        ]
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -36,7 +30,7 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'author', 'text', 'pub_date')
+        fields = '__all__'
         model = Comment
         read_only_fields = ('review',)
 

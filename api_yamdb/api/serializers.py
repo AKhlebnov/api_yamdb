@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 
 from reviews.models import Comment, Review, Category, Genre, Title
 
@@ -20,13 +19,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('title',)
-        # validators = [
-        #     UniqueTogetherValidator(
-        #         queryset=Review.objects.all(),
-        #         fields=('author', 'title'),
-        #         message='Вы уже написали отзыв на это произведение.'
-        #     )
-        # ]
 
 
 class CommentSerializer(serializers.ModelSerializer):

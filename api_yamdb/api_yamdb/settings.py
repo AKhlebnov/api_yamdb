@@ -1,4 +1,3 @@
-from datetime import timedelta
 from pathlib import Path
 
 
@@ -22,11 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.apps.UsersConfig',
-    'reviews.apps.ReviewsConfig',
-    'api.apps.ApiConfig',
-    'rest_framework',
-    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -91,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -124,6 +118,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 5
+
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'

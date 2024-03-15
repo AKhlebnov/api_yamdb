@@ -8,7 +8,7 @@ from rest_framework.exceptions import MethodNotAllowed
 
 from .serializers import (
     UserSignupSerializer,
-    CustomTokenObtainPairSerializer,
+    CustomTokenObtainSerializer,
     UserSerializer,
     UserMePatchSerializer
 )
@@ -25,28 +25,26 @@ class UserSignupViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     """Класс представления получения JWT-токена."""
-    serializer_class = CustomTokenObtainPairSerializer
+    serializer_class = CustomTokenObtainSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            data = serializer.validated_data
-            user = User.objects.get(username=data['username'])
-            refresh = RefreshToken.for_user(user)
-            access_token = refresh.access_token
-            return Response(
-                {'token': str(access_token)},
-                status=status.HTTP_200_OK
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        user = User.objects.get(username=data['username'])
+        refresh = RefreshToken.for_user(user)
+        access_token = refresh.access_token
+        return Response(
+            {'token': str(access_token)},
+            status=status.HTTP_200_OK
+        )
 
 
 class UserListCreateAPIView(
@@ -100,6 +98,6 @@ class UserAccountViewSet(
         if 'role' in request.data:
             raise MethodNotAllowed(
                 'PATCH',
-                detail='Невозможно изменить поле "role"'
+                detail='Невозможно изменить поле "role".'
             )
         return super().update(request, *args, **kwargs, partial=True)

@@ -12,13 +12,13 @@ class UsernameAndEmailValidatorMixin:
         email = attrs.get('email')
         if username == 'me':
             raise serializers.ValidationError(
-                "Использование имени 'me' запрещено."
+                'Использование имени "me" запрещено.'
             )
         request = self.context.get('request')
         if request.method == 'POST':
             if not email:
                 raise serializers.ValidationError(
-                    "Поле 'email' обязательно для заполнения."
+                    'Поле "email" обязательно для заполнения.'
                 )
         existing_user_by_username = User.objects.filter(
             username=username
@@ -28,10 +28,10 @@ class UsernameAndEmailValidatorMixin:
             return attrs
         if existing_user_by_username:
             raise serializers.ValidationError(
-                "Этот username уже используется."
+                'Этот username уже используется.'
             )
         if existing_user_by_email:
             raise serializers.ValidationError(
-                "Этот email уже используется."
+                'Этот email уже используется.'
             )
         return attrs

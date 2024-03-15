@@ -83,12 +83,12 @@ class CategoryGenreBase(models.Model):
         unique=True
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         abstract = True
         ordering = ('name',)
+
+        def __str__(self):
+            return self.name
 
 
 class Category(CategoryGenreBase):
@@ -125,7 +125,8 @@ class Title(models.Model):
     )
     year = models.PositiveSmallIntegerField(
         verbose_name='Год выпуска',
-        validators=[validate_actual_year]
+        validators=[validate_actual_year],
+        db_index=True
     )
     description = models.TextField(
         verbose_name='Описание',
@@ -145,10 +146,10 @@ class Title(models.Model):
         null=True
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
         ordering = ('name',)
+
+        def __str__(self):
+            return self.name

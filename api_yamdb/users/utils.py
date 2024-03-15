@@ -1,11 +1,5 @@
 from django.core.mail import send_mail
 from django.conf import settings
-from django.utils.crypto import get_random_string
-
-
-def generate_confirmation_code(length=10):
-    """Функция генерации кода подтверждения."""
-    return get_random_string(length)
 
 
 def send_confirmation_email(email, confirmation_code):

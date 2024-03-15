@@ -42,10 +42,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = self.get_title()
-        try:
-            serializer.save(author=self.request.user, title=title)
-        except IntegrityError:
-            raise ValidationError('Вы уже оставили отзыв на это произведение.')
+        serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

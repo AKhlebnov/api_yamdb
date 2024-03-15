@@ -4,6 +4,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 from .validators import validate_actual_year
 
+MIN_VALUE = 1
+MAX_VALUE = 10
+
 User = get_user_model()
 
 
@@ -35,8 +38,8 @@ class Review(ReviewCommentBase):
     """Описание модели 'Отзыв'."""
     score = models.PositiveSmallIntegerField(
         validators=[
-            MinValueValidator(1),
-            MaxValueValidator(10)
+            MinValueValidator(MIN_VALUE),
+            MaxValueValidator(MAX_VALUE)
         ],
         verbose_name='Оценка'
     )
@@ -87,8 +90,8 @@ class CategoryGenreBase(models.Model):
         abstract = True
         ordering = ('name',)
 
-        def __str__(self):
-            return self.name
+    def __str__(self):
+        return self.name
 
 
 class Category(CategoryGenreBase):
@@ -151,5 +154,5 @@ class Title(models.Model):
         verbose_name_plural = 'Произведения'
         ordering = ('name',)
 
-        def __str__(self):
-            return self.name
+    def __str__(self):
+        return self.name

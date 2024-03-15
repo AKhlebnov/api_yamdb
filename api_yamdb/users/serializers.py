@@ -1,11 +1,10 @@
 from django.core.validators import RegexValidator, MaxLengthValidator
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-from .utils import generate_confirmation_code, send_confirmation_email
+from .utils import send_confirmation_email
 from .mixins import UsernameAndEmailValidatorMixin
 
 User = get_user_model()
@@ -37,47 +36,38 @@ class UserSignupSerializer(
         }
 
     def create(self, validated_data):
-        username = validated_data['username']
         email = validated_data['email']
-        confirmation_code = generate_confirmation_code()
-        ex_user = User.objects.filter(username=username, email=email).first()
-        if ex_user:
-            ex_user.confirmation_code = confirmation_code
-            ex_user.save()
-            send_confirmation_email(validated_data['email'], confirmation_code)
-            return ex_user
-        user = User.objects.create(
-            **validated_data,
-            confirmation_code=confirmation_code
+        username = validated_data['username']
+        user, created = User.objects.get_or_create(
+            username=username, email=email
         )
+        confirmation_code = default_token_generator.make_token(user)
+        user.confirmation_code = confirmation_code
+        user.save()
         send_confirmation_email(email, confirmation_code)
         return user
 
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+class CustomTokenObtainSerializer(serializers.Serializer):
     """Сериализатор для получения JWT-токена."""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        del self.fields['password']
-        self.fields['username'] = serializers.CharField()
-        self.fields['confirmation_code'] = serializers.CharField()
+    username = serializers.CharField()
+    confirmation_code = serializers.CharField()
 
     def validate(self, attrs):
         username = attrs.get('username')
         confirmation_code = attrs.get('confirmation_code')
-
         if not username:
             raise serializers.ValidationError(
-                {'username': 'Username is required.'})
+                {'username': 'Имя пользователя обязательно.'})
         user = User.objects.filter(username=username).first()
         if not user:
-            raise NotFound({'detail': 'User not found.'})
+            raise NotFound({'detail': 'Пользователь не найден.'})
         if not confirmation_code:
             raise serializers.ValidationError(
-                {'confirmation_code': 'Confirmation code is required.'})
+                {'confirmation_code': 'Код подтверждения обязателен.'})
         if user.confirmation_code != confirmation_code:
             raise serializers.ValidationError(
-                {'confirmation_code': 'Invalid confirmation code.'})
+                {'confirmation_code': 'Недействительный код подтверждения.'})
         return attrs
 
 

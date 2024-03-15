@@ -2,15 +2,14 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 
-CHOICES = (
-    ('user', 'Пользователь'),
-    ('moderator', 'Модератор'),
-    ('admin', 'Администратор'),
-)
-
 
 class CustomUser(AbstractUser):
     """Кастомная модель пользователя."""
+    CHOICES = (
+        ('user', 'Пользователь'),
+        ('moderator', 'Модератор'),
+        ('admin', 'Администратор'),
+    )
     bio = models.TextField(blank=True, verbose_name='Биография')
     role = models.CharField(
         max_length=20,
@@ -19,11 +18,23 @@ class CustomUser(AbstractUser):
         verbose_name='Роль'
     )
     confirmation_code = models.CharField(
-        max_length=20,
+        max_length=120,
         blank=True,
         null=True,
         verbose_name='Код подтверждения'
     )
+
+    @property
+    def is_user(self):
+        return self.role == 'user'
+
+    @property
+    def is_moderator(self):
+        return self.role == 'moderator'
+
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
 
     def clean(self):
         super().clean()
@@ -45,6 +56,9 @@ class CustomUser(AbstractUser):
                 raise ValidationError(
                     {'email': 'Этот email уже используется.'}
                 )
-    
+
     class Meta:
         ordering = ('id',)
+
+    def __str__(self):
+        return self.username

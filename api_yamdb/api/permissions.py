@@ -8,7 +8,7 @@ class IsAdmin(permissions.BasePermission):
     message = 'Доступно только админу.'
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'admin'
+        return request.user.is_authenticated and request.user.is_admin
 
 
 class IsSuperuser(permissions.BasePermission):
@@ -31,7 +31,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
                 or (request.user.is_authenticated
-                    and request.user.role == 'admin'))
+                    and request.user.is_admin))
 
 
 class IsAuthorOrModeratorOrAdmin(permissions.BasePermission):
@@ -43,7 +43,7 @@ class IsAuthorOrModeratorOrAdmin(permissions.BasePermission):
         if request.user.is_authenticated:
             return (
                 request.user == obj.author
-                or request.user.role == 'moderator'
-                or request.user.role == 'admin'
+                or request.user.is_moderator
+                or request.user.is_admin
             )
         return False

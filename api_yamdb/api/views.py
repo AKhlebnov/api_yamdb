@@ -1,10 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, viewsets
-from rest_framework.exceptions import ValidationError
 
 from reviews.models import Title, Review, Category, Genre, Title
 from .filters import TitleFilter

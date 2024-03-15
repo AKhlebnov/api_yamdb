@@ -59,3 +59,6 @@ class CustomUser(AbstractUser):
 
     class Meta:
         ordering = ('id',)
+
+    def __str__(self):
+        return self.username

@@ -11,6 +11,7 @@ User = get_user_model()
 MAX_SCORE = 10
 MIN_SCORE = 1
 
+
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True,
@@ -25,7 +26,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('title',)
-    
+
     def validate(self, data):
         request = self.context['request']
         title_id = self.context['view'].kwargs.get('title_id')

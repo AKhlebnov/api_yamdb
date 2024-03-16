@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-
 from reviews.models import Comment, Review, Category, Genre, Title
 
 User = get_user_model()
@@ -32,8 +31,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         title_id = self.context['view'].kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
         if request.method == 'POST':
-            if Review.objects.filter(
-                    title=title, author=request.user).exists():
+            if title.reviews.filter(
+                    author=request.user).exists():
                 raise ValidationError('Можно оставлять только один'
                                       'отзыв на произведение.')
         return data

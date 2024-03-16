@@ -7,6 +7,8 @@ from rest_framework.exceptions import NotFound
 from .utils import send_confirmation_email
 from .mixins import UsernameAndEmailValidatorMixin
 
+MAX_USERNAME_LENGTH = 150
+
 User = get_user_model()
 
 
@@ -23,7 +25,7 @@ class UserSignupSerializer(
                 'цифры и символы: @/./+/-/_',
                 code='invalid_username'
             ),
-            MaxLengthValidator(150)
+            MaxLengthValidator(MAX_USERNAME_LENGTH)
         ]
     )
 

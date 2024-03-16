@@ -50,7 +50,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create':
             return [permissions.IsAuthenticated()]
-        elif self.action in ('partial_update', 'destroy'):
+        if self.action in ('partial_update', 'destroy'):
             return [IsAuthorOrModeratorOrAdmin()]
         return [permissions.IsAuthenticatedOrReadOnly()]
 
